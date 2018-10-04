@@ -58,8 +58,18 @@ like `helm` to work with EKS via IAM authentication, by making use of
   cp completion/kc.zsh ~/.oh-my-zsh/completions/
   ```
 
+## Configuration
+
+`kc` supports the following environment variables that can alter its behavior:
+
+env | default | behavior
+--- | --- | ---
+`KC_KUBE_PS1_TOGGLE` | 1 | Whether to turn the kube-ps1 prompt display on and off automatically based on whether kc has set an active context
+`KC_TAB_COLOR` | 1 | Whether to change the iTerm2 tab color automatically based on the context name (e.g. red for `prod` anywhere in the context name)
+`KC_EKS_ALIASES` | 1 | Whether to alias `kubectl` and `helm` to use AWS IAM authentication via `aws-vault`
+
 ## Limitations
 
-- `kc` is currently configured for EKS: it uses `aws-vault` authentication and
+- When `kc` is configured for EKS, it always uses `aws-vault` authentication and
 assumes your context name is the same as your AWS authentication profile name
 - `kc` has only been tested on Mac OS X so far

@@ -2,52 +2,30 @@
 #
 # Helper shell function to let tools like kubecfg and work with aws-vault
 #
-# Installation:
-#
-# For bash:
-#   In your ~/.bashrc, add the following lines:
-#
-#   if [[ -f ~/path/to/kc-init ]]; then
-#     source ~/path/to/kc-init
-#   fi
-#
-# For zsh:
-#   In your ~/.zshrc, add the following lines:
-#
-#   if [[ -f ~/path/to/kc-init ]]; then
-#     source ~/path/to/kc-init
-#   fi
+# Installation: see README.md
 #
 # Usage:
-#
 #  - Run `kc context` to use the given context by default in the current shell
 #  - Run `kc context namespace` to use the given context and namespace
 #  - Run `kc` to list contexts and reset your shell to normal
-#
+
+if ! hash aws-vault > /dev/null 2>&1; then
+    echo "Expected aws-vault to be on PATH; kc is configured for EKS" >&2
+    exit 1
+fi
 
 if test -n "$ZSH_VERSION"; then
   if [[ "$ZSH_EVAL_CONTEXT" == 'toplevel' ]]; then
       echo "You're running $0, but the correct way to use it is to source it in your current shell (so that it can create aliases for you.)" >&2
       echo "Run 'source $0' instead!" >&2
-      exit 1
+      exit 2
   fi
 elif test -n "$BASH_VERSION"; then
   if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
       echo "You're running $0, but the correct way to use it is to source it in your current shell (so that it can create aliases for you.)" >&2
       echo "Run 'source $0' instead!" >&2
-      exit 1
+      exit 2
   fi
-fi
-
-if ! hash aws-vault > /dev/null 2>&1; then
-    echo "Expected aws-vault to be on PATH" >&2
-    exit 3
-fi
-
-# Alias completion for contexts to kc
-loaded=$(type -t _kube_contexts)
-if [[ "$loaded" == "function" ]]; then
-    complete -F _kube_contexts kc
 fi
 
 # Colors for iterm2 tabs
@@ -65,7 +43,7 @@ fi
 # Announce the context change
 #
 function __kc_on() {
-  if [[ "$(type -t kubeon)" == "function" ]]; then
+  if typeset -f kubeon > /dev/null; then
     kubeon
   fi
 
@@ -97,7 +75,7 @@ function __kc_on() {
 # Announce the reset
 #
 function __kc_off() {
-  if [[ "$(type -t kubeon)" == "function" ]]; then
+  if typeset -f kubeoff > /dev/null; then
     kubeoff
   fi
 

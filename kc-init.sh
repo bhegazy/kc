@@ -1,18 +1,14 @@
-#!/bin/sh
-#
 # Helper shell function to let tools like kubecfg and work with aws-vault
 #
 # Installation: see README.md
+#
+# This file expects to be sourced from a compatible shell (such as Bash or ZSH)
+# and defines the `kc` shell function.
 #
 # Usage:
 #  - Run `kc context` to use the given context by default in the current shell
 #  - Run `kc context namespace` to use the given context and namespace
 #  - Run `kc` to list contexts and reset your shell to normal
-
-if ! hash aws-vault > /dev/null 2>&1; then
-    echo "Expected aws-vault to be on PATH; kc is configured for EKS" >&2
-    exit 1
-fi
 
 if test -n "$ZSH_VERSION"; then
   if [[ "$ZSH_EVAL_CONTEXT" == 'toplevel' ]]; then
@@ -28,8 +24,15 @@ elif test -n "$BASH_VERSION"; then
   fi
 fi
 
+if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+  if ! hash aws-vault > /dev/null 2>&1; then
+      echo "Expected aws-vault to be on PATH; kc is configured for EKS" >&2
+      exit 1
+  fi
+fi
+
 # Colors for iterm2 tabs
-if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
   function __kc_tab_color() {
     echo -ne "\033]6;1;bg;red;brightness;${1:-}\a\033]6;1;bg;green;brightness;${2:-}\a\033]6;1;bg;blue;brightness;${3:-}\a"
   }
@@ -39,15 +42,15 @@ if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
   }
 fi
 
-#
 # Announce the context change
-#
 function __kc_on() {
   if typeset -f kubeon > /dev/null; then
-    kubeon
+    if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
+      kubeon
+    fi
   fi
 
-  if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+  if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
     case "${__kc_context}" in
       *prod*)
         __kc_tab_color 251 107  98 # red
@@ -71,15 +74,15 @@ function __kc_on() {
   fi
 }
 
-#
 # Announce the reset
-#
 function __kc_off() {
   if typeset -f kubeoff > /dev/null; then
-    kubeoff
+    if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
+      kubeoff
+    fi
   fi
 
-  if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+  if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
     __kc_tab_color_reset
   fi
 }
@@ -87,16 +90,15 @@ function __kc_off() {
 # The main kc function
 function kc() {
   if [[ -z "${__KC_CONFIG_DIR:-}" ]]; then
-    export __KC_CONFIG_DIR=$(mktemp -d)
+    __KC_CONFIG_DIR=$(mktemp -d)
+    export __KC_CONFIG_DIR
   fi
 
   __kc_context=${1:-}
   __kc_ns=${2:-}
 
   if [[ -n "${__kc_context}" ]]; then
-    #
     # Set the KUBECONFIG to a generated config with the given context and/or namespace
-    #
     if [[ -z "${__kc_config_previous:-}" && -n "${KUBECONFIG:-}" ]]; then
       __kc_config_previous="${KUBECONFIG}"
     fi
@@ -139,28 +141,25 @@ function kc() {
 
     export KUBECONFIG="${config}"
 
-    #
-    # Alias common tools to use aws-vault
-    #
-    alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
-    alias helm="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- helm"
+    if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+      alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
+      alias helm="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- helm"
+    fi
 
     __kc_on
   else
-    #
     # Reset KUBECONFIG to its previous value
-    #
     if [[ -n "${__kc_config_previous:-}" ]]; then
       export KUBECONFIG="${__kc_config_previous}"
     else
       unset KUBECONFIG
     fi
 
-    #
     # Unalias common tools
-    #
-    unalias kubectl 2>/dev/null
-    unalias helm 2>/dev/null
+    if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+      unalias kubectl 2>/dev/null
+      unalias helm 2>/dev/null
+    fi
 
     __kc_off
 

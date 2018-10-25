@@ -43,7 +43,8 @@ if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
 fi
 
 # Announce the context change
-function __kc_on() {
+function __kc_on()
+  # shellcheck disable=SC2034
   if typeset -f kubeon > /dev/null; then
     if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
       kubeon
@@ -76,6 +77,7 @@ function __kc_on() {
 
 # Announce the reset
 function __kc_off() {
+  # shellcheck disable=SC2034
   if typeset -f kubeoff > /dev/null; then
     if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
       kubeoff

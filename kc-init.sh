@@ -44,6 +44,7 @@ fi
 
 # Announce the context change
 function __kc_on() {
+  # shellcheck disable=SC2034
   if typeset -f kubeon > /dev/null; then
     if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
       kubeon
@@ -76,6 +77,7 @@ function __kc_on() {
 
 # Announce the reset
 function __kc_off() {
+  # shellcheck disable=SC2034
   if typeset -f kubeoff > /dev/null; then
     if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
       kubeoff
@@ -142,7 +144,9 @@ function kc() {
     export KUBECONFIG="${config}"
 
     if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+      # shellcheck disable=SC2139
       alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
+      # shellcheck disable=SC2139
       alias helm="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- helm"
     fi
 

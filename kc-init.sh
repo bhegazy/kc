@@ -43,7 +43,7 @@ if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
 fi
 
 # Announce the context change
-function __kc_on()
+function __kc_on() {
   # shellcheck disable=SC2034
   if typeset -f kubeon > /dev/null; then
     if [[ ${KC_KUBE_PS1_TOGGLE:-1} -eq 1 ]]; then
@@ -144,7 +144,9 @@ function kc() {
     export KUBECONFIG="${config}"
 
     if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+      # shellcheck disable=SC2139
       alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
+      # shellcheck disable=SC2139
       alias helm="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- helm"
     fi
 

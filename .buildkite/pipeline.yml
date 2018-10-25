@@ -2,6 +2,8 @@ steps:
   - label: ":shell: Shellcheck"
     plugins:
       shellcheck#v1.1.1:
+        options:
+          - '--shell=bash'
         files:
           - kc-init.sh
 

@@ -144,10 +144,12 @@ function kc() {
     export KUBECONFIG="${config}"
 
     if [[ "${KC_EKS_ALIASES:-0}" -eq 1 ]]; then
+      assume_role_ttl="${KC_EKS_ASSUME_ROLE_TTL:-60m}"
+
       # shellcheck disable=SC2139
-      alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
+      alias kubectl="aws-vault exec --assume-role-ttl=${assume_role_ttl} ${__kc_context} -- kubectl"
       # shellcheck disable=SC2139
-      alias helm="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- helm"
+      alias helm="aws-vault exec --assume-role-ttl=${assume_role_ttl} ${__kc_context} -- helm"
     fi
 
     __kc_on

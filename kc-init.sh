@@ -43,6 +43,11 @@ if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
     }
   fi
 
+  if [[ ${KC_ITERM_USER_VAR:-1} -eq 1 ]]; then
+    function __kc_user_var() {
+      printf "\033]1337;SetUserVar=%s=%s\007" "$1" "$(printf "%s" "$2" | base64 | tr -d '\n')"
+    }
+  fi
 fi
 
 # Announce the context change
@@ -71,6 +76,11 @@ function __kc_on() {
           ;;
       esac
     fi
+
+    if [[ ${KC_ITERM_USER_VAR:-1} -eq 1 ]]; then
+      __kc_user_var kubecontext "${__kc_context}"
+      __kc_user_var kubens "${__kc_ns}"
+    fi
   fi
 
   if [[ -z "${__kc_ns}" ]]; then
@@ -89,8 +99,15 @@ function __kc_off() {
     fi
   fi
 
-  if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
-    __kc_tab_color_reset
+  if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+    if [[ ${KC_ITERM_TAB_COLOR:-0} -eq 1 ]]; then
+      __kc_tab_color_reset
+    fi
+
+    if [[ ${KC_ITERM_USER_VAR:-1} -eq 1 ]]; then
+      __kc_user_var kubecontext ""
+      __kc_user_var kubens ""
+    fi
   fi
 }
 

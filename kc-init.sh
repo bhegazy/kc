@@ -33,7 +33,7 @@ fi
 
 # Colors for iterm2 tabs
 if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
-  if [[ ${KC_ITERM_TAB_COLOR:-1} -eq 1 ]]; then
+  if [[ ${KC_ITERM_TAB_COLOR:-0} -eq 1 ]]; then
     function __kc_tab_color() {
       echo -ne "\033]6;1;bg;red;brightness;${1:-}\a\033]6;1;bg;green;brightness;${2:-}\a\033]6;1;bg;blue;brightness;${3:-}\a"
     }
@@ -60,7 +60,7 @@ function __kc_on() {
   fi
 
   if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
-    if [[ ${KC_ITERM_TAB_COLOR:-1} -eq 1 ]]; then
+    if [[ ${KC_ITERM_TAB_COLOR:-0} -eq 1 ]]; then
       case "${__kc_context}" in
         *prod*)
           __kc_tab_color 251 107  98 # red

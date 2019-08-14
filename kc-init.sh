@@ -24,7 +24,7 @@ elif test -n "$BASH_VERSION"; then
   fi
 fi
 
-if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+if [[ "${KC_EKS_ALIASES:-0}" -eq 1 ]]; then
   if ! hash aws-vault > /dev/null 2>&1; then
       echo "Expected aws-vault to be on PATH; kc is configured for EKS" >&2
       exit 1
@@ -143,7 +143,7 @@ function kc() {
 
     export KUBECONFIG="${config}"
 
-    if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+    if [[ "${KC_EKS_ALIASES:-0}" -eq 1 ]]; then
       # shellcheck disable=SC2139
       alias kubectl="aws-vault exec --assume-role-ttl=60m ${__kc_context} -- kubectl"
       # shellcheck disable=SC2139
@@ -160,7 +160,7 @@ function kc() {
     fi
 
     # Unalias common tools
-    if [[ "${KC_EKS_ALIASES:-1}" -eq 1 ]]; then
+    if [[ "${KC_EKS_ALIASES:-0}" -eq 1 ]]; then
       unalias kubectl 2>/dev/null
       unalias helm 2>/dev/null
     fi

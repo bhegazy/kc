@@ -66,7 +66,7 @@ env | default | behavior
 --- | --- | ---
 `KC_KUBE_PS1_TOGGLE` | 1 | Whether to turn the kube-ps1 prompt display on and off automatically based on whether kc has set an active context
 `KC_TAB_COLOR` | 1 | Whether to change the iTerm2 tab color automatically based on the context name (e.g. red for `prod` anywhere in the context name)
-`KC_EKS_ALIASES` | 1 | Whether to alias `kubectl` and `helm` to use AWS IAM authentication via `aws-vault`
+`KC_EKS_ALIASES` | 0 | Whether to alias `kubectl` and `helm` to use AWS IAM authentication via `aws-vault`
 
 ## Limitations
 

@@ -12,10 +12,6 @@ accidentally run against the production cluster in a different shell where your
 it works around the lack of a [KUBECONTEXT](https://github.com/kubernetes/kubernetes/issues/27308)
 environment variable.)
 
-Because it's a shell function, not an executable, it can also alias common tools
-like `helm` to work with EKS via IAM authentication, by making use of
-[aws-vault](https://github.com/99designs/aws-vault)
-
 ## Usage
 
 ```
@@ -58,6 +54,17 @@ like `helm` to work with EKS via IAM authentication, by making use of
   cp completion/kc.zsh ~/.oh-my-zsh/completions/
   ```
 
+## Other Features
+
+`kc` has a few extra features for users of iTerm2 and/or EKS:
+
+- `kc` can alias common tools like `helm`/`kubectl` to work with EKS via IAM
+  authentication, by making use of [aws-vault](https://github.com/99designs/aws-vault) -
+  to enable this feature, set `KC_EKS_ALIASES=1`
+- Under iTerm2 `kc` can optionally change tab color depending on the context name
+- Under iTerm2 `kc` will set the `kubecontext` and `kubens` user variables - these
+  can be used to put the current context/namespace in the status bar
+
 ## Configuration
 
 `kc` supports the following environment variables that can alter its behavior:
@@ -65,8 +72,10 @@ like `helm` to work with EKS via IAM authentication, by making use of
 env | default | behavior
 --- | --- | ---
 `KC_KUBE_PS1_TOGGLE` | 1 | Whether to turn the kube-ps1 prompt display on and off automatically based on whether kc has set an active context
-`KC_TAB_COLOR` | 1 | Whether to change the iTerm2 tab color automatically based on the context name (e.g. red for `prod` anywhere in the context name)
-`KC_EKS_ALIASES` | 1 | Whether to alias `kubectl` and `helm` to use AWS IAM authentication via `aws-vault`
+`KC_ITERM_USER_VAR` | 1 | Whether to set the iTerm2 user variables `kubecontext`/`kubens` to the current context/namespace when it changes
+`KC_ITERM_TAB_COLOR` | 0 | Whether to change the iTerm2 tab color automatically based on the context name (e.g. red for `prod` anywhere in the context name)
+`KC_EKS_ALIASES` | 0 | Whether to alias `kubectl` and `helm` to use AWS IAM authentication via `aws-vault`
+`KC_EKS_ASSUME_ROLE_TTL` | 60m | Passed to `aws-vault` as `--assume-role-ttl`
 
 ## Limitations
 

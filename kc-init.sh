@@ -102,9 +102,7 @@ function kc() {
   if [[ -n "${__kc_context}" ]]; then
     # Set the KUBECONFIG to a generated config with the given context and/or namespace
     if [[ -z "${__kc_config_previous:-}" && -n "${KUBECONFIG:-}" && "${KUBECONFIG:-}" != ${__KC_CONFIG_DIR}* ]]; then
-      set -x
       __kc_config_previous="${KUBECONFIG}"
-      set +x
     fi
 
     local config="${__KC_CONFIG_DIR}/${__kc_context}"

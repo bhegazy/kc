@@ -32,14 +32,17 @@ if [[ "${KC_EKS_ALIASES:-0}" -eq 1 ]]; then
 fi
 
 # Colors for iterm2 tabs
-if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
-  function __kc_tab_color() {
-    echo -ne "\033]6;1;bg;red;brightness;${1:-}\a\033]6;1;bg;green;brightness;${2:-}\a\033]6;1;bg;blue;brightness;${3:-}\a"
-  }
+if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+  if [[ ${KC_ITERM_TAB_COLOR:-1} -eq 1 ]]; then
+    function __kc_tab_color() {
+      echo -ne "\033]6;1;bg;red;brightness;${1:-}\a\033]6;1;bg;green;brightness;${2:-}\a\033]6;1;bg;blue;brightness;${3:-}\a"
+    }
 
-  function __kc_tab_color_reset() {
-    echo -ne "\033]6;1;bg;*;default\a"
-  }
+    function __kc_tab_color_reset() {
+      echo -ne "\033]6;1;bg;*;default\a"
+    }
+  fi
+
 fi
 
 # Announce the context change
@@ -51,21 +54,23 @@ function __kc_on() {
     fi
   fi
 
-  if [[ "${TERM_PROGRAM}" == "iTerm.app" && ${KC_TAB_COLOR:-1} -eq 1 ]]; then
-    case "${__kc_context}" in
-      *prod*)
-        __kc_tab_color 251 107  98 # red
-        ;;
-      *staging*)
-        __kc_tab_color  95 164 248 # blue
-        ;;
-      *docker*)
-        __kc_tab_color 181 215  73 # green
-        ;;
-      *)
-        __kc_tab_color_reset
-        ;;
-    esac
+  if [[ "${TERM_PROGRAM}" == "iTerm.app" ]]; then
+    if [[ ${KC_ITERM_TAB_COLOR:-1} -eq 1 ]]; then
+      case "${__kc_context}" in
+        *prod*)
+          __kc_tab_color 251 107  98 # red
+          ;;
+        *staging*)
+          __kc_tab_color  95 164 248 # blue
+          ;;
+        *docker*)
+          __kc_tab_color 181 215  73 # green
+          ;;
+        *)
+          __kc_tab_color_reset
+          ;;
+      esac
+    fi
   fi
 
   if [[ -z "${__kc_ns}" ]]; then
